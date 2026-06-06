@@ -569,3 +569,11 @@ defaults:
             gateway: nexthop
           ipv6_static_routes:
             gateway: nexthop
+    topology_groups:
+      custom_control_features:
+        default_action: reject
+        target_level: SITE
+        sequences:
+          base_action: accept
+          type: route
+          ip_type: ipv4

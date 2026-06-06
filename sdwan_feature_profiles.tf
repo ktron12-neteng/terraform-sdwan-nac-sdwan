@@ -45,3 +45,10 @@ resource "sdwan_policy_object_feature_profile" "policy_object_feature_profile" {
   name        = try(local.feature_profiles.policy_object_profile.name, local.defaults.sdwan.feature_profiles.policy_object_profile.name)
   description = try(local.feature_profiles.policy_object_profile.description, "")
 }
+
+resource "sdwan_topology_feature_profile" "topology_feature_profile" {
+  # One topology feature profile per topology group (named after the group).
+  for_each    = { for g in try(local.topology_groups, {}) : g.name => g }
+  name        = each.value.name
+  description = try(each.value.description, "")
+}

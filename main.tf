@@ -8,6 +8,8 @@ locals {
   centralized_policies   = try(local.model.sdwan.centralized_policies, {})
   configuration_groups   = try(local.model.sdwan.configuration_groups, {})
   feature_profiles       = try(local.model.sdwan.feature_profiles, {})
+  network_hierarchy      = try(local.model.sdwan.network_hierarchy, {})
+  topology_groups        = try(local.model.sdwan.topology_groups, {})
   policy_groups          = try(local.model.sdwan.policy_groups, {})
   settings               = try(local.model.sdwan.settings, {})
   device_type_map = {
