@@ -5,12 +5,12 @@ resource "sdwan_configuration_group" "configuration_group" {
   description = try(each.value.description, "")
   solution    = "sdwan"
   feature_profile_ids = flatten([
-    try(each.value.cli_profile, null) == null ? [] : [sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id],
-    try(each.value.other_profile, null) == null ? [] : [sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id],
-    try(each.value.policy_object_profile, null) == null ? [] : [sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id],
-    try(each.value.service_profile, null) == null ? [] : [sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id],
-    try(each.value.system_profile, null) == null ? [] : [sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id],
-    try(each.value.transport_profile, null) == null ? [] : [sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id],
+    try(each.value.cli_profile, null) == null ? [] : try([sdwan_cli_feature_profile.cli_feature_profile[each.value.cli_profile].id], []),
+    try(each.value.other_profile, null) == null ? [] : try([sdwan_other_feature_profile.other_feature_profile[each.value.other_profile].id], []),
+    try(each.value.policy_object_profile, null) == null ? [] : try([sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id], []),
+    try(each.value.service_profile, null) == null ? [] : try([sdwan_service_feature_profile.service_feature_profile[each.value.service_profile].id], []),
+    try(each.value.system_profile, null) == null ? [] : try([sdwan_system_feature_profile.system_feature_profile[each.value.system_profile].id], []),
+    try(each.value.transport_profile, null) == null ? [] : try([sdwan_transport_feature_profile.transport_feature_profile[each.value.transport_profile].id], []),
   ])
   devices = length([for router in local.routers : router if router.configuration_group == each.value.name]) == 0 ? null : [
     for router in local.routers : {
@@ -25,19 +25,19 @@ resource "sdwan_configuration_group" "configuration_group" {
     } if router.configuration_group == each.value.name
   ]
   feature_versions = length(flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    try(each.value.cli_profile, null) == null ? [] : try(local.cli_profile_features_versions[each.value.cli_profile], []),
+    try(each.value.other_profile, null) == null ? [] : try(local.other_profile_features_versions[each.value.other_profile], []),
     try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.service_profile, null) == null ? [] : try(local.service_profile_features_versions[each.value.service_profile], []),
+    try(each.value.system_profile, null) == null ? [] : try(local.system_profile_features_versions[each.value.system_profile], []),
+    try(each.value.transport_profile, null) == null ? [] : try(local.transport_profile_features_versions[each.value.transport_profile], [])
     ])) == 0 ? null : flatten([
-    try(each.value.cli_profile, null) == null ? [] : local.cli_profile_features_versions[each.value.cli_profile],
-    try(each.value.other_profile, null) == null ? [] : local.other_profile_features_versions[each.value.other_profile],
+    try(each.value.cli_profile, null) == null ? [] : try(local.cli_profile_features_versions[each.value.cli_profile], []),
+    try(each.value.other_profile, null) == null ? [] : try(local.other_profile_features_versions[each.value.other_profile], []),
     try(each.value.policy_object_profile, null) == null ? [] : local.policy_object_profile_features_versions,
-    try(each.value.service_profile, null) == null ? [] : local.service_profile_features_versions[each.value.service_profile],
-    try(each.value.system_profile, null) == null ? [] : local.system_profile_features_versions[each.value.system_profile],
-    try(each.value.transport_profile, null) == null ? [] : local.transport_profile_features_versions[each.value.transport_profile]
+    try(each.value.service_profile, null) == null ? [] : try(local.service_profile_features_versions[each.value.service_profile], []),
+    try(each.value.system_profile, null) == null ? [] : try(local.system_profile_features_versions[each.value.system_profile], []),
+    try(each.value.transport_profile, null) == null ? [] : try(local.transport_profile_features_versions[each.value.transport_profile], [])
   ])
   topology_devices = try(each.value.device_tags, null) == null ? null : [for index, device_tag in try(each.value.device_tags, []) : {
     criteria_attribute = "tag"
