@@ -108,7 +108,7 @@ locals {
       sdwan_policy_object_class_map.policy_object_class_map[class_map.name].version,
     ]],
     try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, null) == null ? [] : [for ipv4_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, []) : [
-      sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[ipv4_data_prefix_list.name].version,
+      try(sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[ipv4_data_prefix_list.name].version, null),
     ]],
     try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, null) == null ? [] : [for ipv6_data_prefix_list in try(local.feature_profiles.policy_object_profile.ipv6_data_prefix_lists, []) : [
       sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[ipv6_data_prefix_list.name].version,
