@@ -90,3 +90,20 @@ resource "sdwan_network_hierarchy_cflowd_feature" "network_hierarchy_cflowd" {
     exporting_interval    = try(collector.exporting_interval, null)
   }], null)
 }
+
+# Security Logging (UX 2.0): a single security-logging template under the Global node's
+# Collectors tab (high-speed/Netflow logging + UTD syslog servers).
+resource "sdwan_network_hierarchy_security_logging_feature" "network_hierarchy_security_logging" {
+  count                = try(local.network_hierarchy.security_logging, null) == null ? 0 : 1
+  network_hierarchy_id = local.network_hierarchy_global_id
+  high_speed_logging = try([for server in local.network_hierarchy.security_logging.high_speed_logging : {
+    name      = server.name
+    vrf       = try(server.vrf, null)
+    server_ip = try(server.server_ip, null)
+    port      = try(server.port, null)
+  }], null)
+  utd_syslog = try([for server in local.network_hierarchy.security_logging.utd_syslog : {
+    vpn       = server.vpn
+    server_ip = try(server.server_ip, null)
+  }], null)
+}
