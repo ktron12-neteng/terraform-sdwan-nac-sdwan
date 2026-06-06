@@ -13,6 +13,8 @@ resource "sdwan_topology_group" "topology_group" {
       id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
     }] : [],
   )
+  # Deploy/activate the topology group (async deploy task) when requested.
+  activate = try(each.value.activate, local.defaults.sdwan.topology_groups.activate)
 
   depends_on = [
     sdwan_topology_hub_and_spoke_feature.topology_hub_and_spoke_feature,

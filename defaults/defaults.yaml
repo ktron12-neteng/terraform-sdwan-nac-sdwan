@@ -576,6 +576,7 @@ defaults:
         flow_refresh: 600
         sampling_interval: 1
     topology_groups:
+      activate: false
       custom_control_features:
         default_action: reject
         target_level: SITE
