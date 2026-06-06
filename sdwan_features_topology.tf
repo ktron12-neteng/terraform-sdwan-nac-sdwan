@@ -64,7 +64,13 @@ resource "sdwan_topology_custom_control_feature" "topology_custom_control_featur
   # target sites are referenced by network hierarchy node name (inbound required by API, may be empty)
   target_inbound_site_ids  = try([for site in each.value.feature.target_inbound_sites : local.network_hierarchy_ids[site]], [])
   target_outbound_site_ids = try([for site in each.value.feature.target_outbound_sites : local.network_hierarchy_ids[site]], [])
-  sequences = [for sequence in try(each.value.feature.sequences, []) : {
+  # Sequences are pushed in list order and the API preserves that order (it does
+  # NOT reorder by sequenceId). Sort by `id` so the id annotates position in the
+  # Manager regardless of how the list is written in YAML (lower id = earlier).
+  sequences = [for sequence in [
+    for k in sort([for s in try(each.value.feature.sequences, []) : format("%09d", s.id)]) :
+    [for s in try(each.value.feature.sequences, []) : s if format("%09d", s.id) == k][0]
+    ] : {
     id          = sequence.id
     name        = try(sequence.name, null)
     base_action = try(sequence.base_action, local.defaults.sdwan.topology_groups.custom_control_features.sequences.base_action)
