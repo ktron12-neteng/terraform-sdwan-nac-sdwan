@@ -68,3 +68,25 @@ resource "sdwan_network_hierarchy_site" "network_hierarchy_site" {
   )
   site_id = each.value.site_id
 }
+
+# Cflowd (UX 2.0): a single cflowd template under the Global node's Collectors tab.
+resource "sdwan_network_hierarchy_cflowd_feature" "network_hierarchy_cflowd" {
+  count                 = try(local.network_hierarchy.cflowd, null) == null ? 0 : 1
+  network_hierarchy_id  = local.network_hierarchy_global_id
+  active_flow_timeout   = try(local.network_hierarchy.cflowd.active_flow_timeout, local.defaults.sdwan.network_hierarchy.cflowd.active_flow_timeout)
+  inactive_flow_timeout = try(local.network_hierarchy.cflowd.inactive_flow_timeout, local.defaults.sdwan.network_hierarchy.cflowd.inactive_flow_timeout)
+  flow_refresh          = try(local.network_hierarchy.cflowd.flow_refresh, local.defaults.sdwan.network_hierarchy.cflowd.flow_refresh)
+  sampling_interval     = try(local.network_hierarchy.cflowd.sampling_interval, local.defaults.sdwan.network_hierarchy.cflowd.sampling_interval)
+  collect_tloc_loopback = try(local.network_hierarchy.cflowd.collect_tloc_loopback, null)
+  protocol              = try(local.network_hierarchy.cflowd.protocol, null)
+  tos                   = try(local.network_hierarchy.cflowd.tos, null)
+  remarked_dscp         = try(local.network_hierarchy.cflowd.remarked_dscp, null)
+  collectors = try([for collector in local.network_hierarchy.cflowd.collectors : {
+    vpn_id                = collector.vpn_id
+    ip_address            = try(collector.ip_address, null)
+    port                  = try(collector.port, null)
+    export_spreading      = try(collector.export_spreading, null)
+    bfd_metrics_exporting = try(collector.bfd_metrics_exporting, null)
+    exporting_interval    = try(collector.exporting_interval, null)
+  }], null)
+}

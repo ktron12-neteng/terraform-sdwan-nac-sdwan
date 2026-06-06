@@ -569,6 +569,12 @@ defaults:
             gateway: nexthop
           ipv6_static_routes:
             gateway: nexthop
+    network_hierarchy:
+      cflowd:
+        active_flow_timeout: 600
+        inactive_flow_timeout: 60
+        flow_refresh: 600
+        sampling_interval: 1
     topology_groups:
       custom_control_features:
         default_action: reject
