@@ -55,7 +55,9 @@ resource "sdwan_policy_object_color_list" "policy_object_color_list" {
 }
 
 resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
-  for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p }
+  # Entries flagged `external: true` are NOT created (they already exist on the
+  # Manager, e.g. the system-default rfc1918 lists) - they are looked up below.
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p if !try(p.external, false) }
   name               = each.value.name
   description        = try(each.value.description, null)
   feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
@@ -63,6 +65,23 @@ resource "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_pr
     ipv4_address       = split("/", e)[0]
     ipv4_prefix_length = split("/", e)[1]
   }]
+}
+
+# Look up existing (system-default / pre-existing) IPv4 data prefix lists by name
+# instead of creating them, so a fresh build resolves their per-Manager IDs and
+# never tries to POST a duplicate. Flag an entry with `external: true` to use this.
+data "sdwan_policy_object_data_ipv4_prefix_list" "policy_object_data_ipv4_prefix_list" {
+  for_each           = { for p in try(local.feature_profiles.policy_object_profile.ipv4_data_prefix_lists, {}) : p.name => p if try(p.external, false) }
+  name               = each.value.name
+  feature_profile_id = sdwan_policy_object_feature_profile.policy_object_feature_profile[0].id
+}
+
+locals {
+  # Unified name -> id map across created (resource) and looked-up (data) prefix lists.
+  ipv4_data_prefix_list_ids = merge(
+    { for k, v in sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list : k => v.id },
+    { for k, v in data.sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list : k => v.id },
+  )
 }
 
 resource "sdwan_policy_object_data_ipv6_prefix_list" "policy_object_data_ipv6_prefix_list" {

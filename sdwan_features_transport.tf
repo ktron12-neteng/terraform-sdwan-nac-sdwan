@@ -335,7 +335,7 @@ resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
     base_action = length(keys(try(s.actions, {}))) > 0 ? null : s.base_action
     match_entries = length(keys(try(s.match_entries, {}))) > 0 ? [{
       destination_data_prefix          = try(s.match_entries.destination_data_prefix, null)
-      destination_data_prefix_list_id  = can(s.match_entries.destination_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.destination_data_prefix_list].id : null
+      destination_data_prefix_list_id  = can(s.match_entries.destination_data_prefix_list) ? local.ipv4_data_prefix_list_ids[s.match_entries.destination_data_prefix_list] : null
       destination_data_prefix_variable = try("{{${s.match_entries.destination_data_prefix_variable}}}", null)
       destination_ports = try(length(s.match_entries.destination_ports) == 0, true) ? null : [for p in s.match_entries.destination_ports : {
         port = p
@@ -345,7 +345,7 @@ resource "sdwan_transport_ipv4_acl_feature" "transport_ipv4_acl_feature" {
       packet_length               = try(s.match_entries.packet_length, null)
       protocols                   = try(s.match_entries.protocols, null)
       source_data_prefix          = try(s.match_entries.source_data_prefix, null)
-      source_data_prefix_list_id  = can(s.match_entries.source_data_prefix_list) ? sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[s.match_entries.source_data_prefix_list].id : null
+      source_data_prefix_list_id  = can(s.match_entries.source_data_prefix_list) ? local.ipv4_data_prefix_list_ids[s.match_entries.source_data_prefix_list] : null
       source_data_prefix_variable = try("{{${s.match_entries.source_data_prefix_variable}}}", null)
       source_ports = try(length(s.match_entries.source_ports) == 0, true) ? null : [for p in s.match_entries.source_ports : {
         port = p

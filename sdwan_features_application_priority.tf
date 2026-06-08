@@ -76,7 +76,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       }] : [],
       # Destination criteria
       try(seq.match_entries.destination_data_ipv4_prefix_list, null) != null ? [{
-        destination_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.destination_data_ipv4_prefix_list].id
+        destination_data_ipv4_prefix_list_id = local.ipv4_data_prefix_list_ids[seq.match_entries.destination_data_ipv4_prefix_list]
       }] : [],
       try(seq.match_entries.destination_data_ipv6_prefix_list, null) != null ? [{
         destination_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.destination_data_ipv6_prefix_list].id
@@ -117,7 +117,7 @@ resource "sdwan_application_priority_traffic_policy_policy" "application_priorit
       }] : [],
       # Source criteria
       try(seq.match_entries.source_data_ipv4_prefix_list, null) != null ? [{
-        source_data_ipv4_prefix_list_id = sdwan_policy_object_data_ipv4_prefix_list.policy_object_data_ipv4_prefix_list[seq.match_entries.source_data_ipv4_prefix_list].id
+        source_data_ipv4_prefix_list_id = local.ipv4_data_prefix_list_ids[seq.match_entries.source_data_ipv4_prefix_list]
       }] : [],
       try(seq.match_entries.source_data_ipv6_prefix_list, null) != null ? [{
         source_data_ipv6_prefix_list_id = sdwan_policy_object_data_ipv6_prefix_list.policy_object_data_ipv6_prefix_list[seq.match_entries.source_data_ipv6_prefix_list].id
